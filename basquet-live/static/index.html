@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="ca"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Bàsquet Live</title>
+<style>
+body{font:16px system-ui,sans-serif;margin:0;background:#f4f4f6;color:#1b1b1f}
+header{background:#e8590c;color:#fff;padding:12px 16px;font-weight:700}
+main{padding:12px;max-width:640px;margin:auto}
+input,button{font:inherit;padding:10px;border-radius:8px;border:1px solid #bbb}
+input{width:100%;box-sizing:border-box}
+button{background:#fff;margin:4px 4px 4px 0}button.on{background:#e8590c;color:#fff;border-color:#e8590c}
+.card{background:#fff;border-radius:10px;padding:12px;margin:8px 0;cursor:pointer}
+.sc{font-size:28px;font-weight:700}.meta{color:#666;font-size:13px}
+.warn{background:#fff3bf;padding:8px;border-radius:8px;margin:8px 0}
+.demo{background:#ffe3e3;padding:8px;border-radius:8px;margin:8px 0;font-weight:600}
+table{width:100%;border-collapse:collapse;font-size:14px}td,th{padding:4px;text-align:right}td:nth-child(2),th:nth-child(2){text-align:left}
+</style></head><body>
+<header>Bàsquet Live</header>
+<main>
+<div class="demo" id="demo">MODE DEMO: dades fictícies, no provenen de la FCBQ.</div>
+<input id="q" placeholder="Cerca un club (p. ex. qbasket)" autocomplete="off">
+<div id="clubs"></div><div id="filtres" hidden></div><div id="out"></div>
+</main>
+<script>
+const $=id=>document.getElementById(id), D=v=>v==null?"—":String(v);
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const ESTAT={programat:"Programat",en_joc:"En joc",finalitzat:"Finalitzat",ajornat:"Ajornat",cancellat:"Cancel·lat",desconegut:"Estat desconegut"};
+let club="",filtre="pendents";
+const j=u=>fetch(u).then(r=>r.json());
+const hora=iso=>iso?new Date(iso).toLocaleString("ca",{dateStyle:"short",timeStyle:"short"}):"—";
+function foot(m){return `<div class="meta">Font: ${esc(D(m.font))} · actualitzat: ${hora(m.actualitzatA)}</div>`+
+  (m.antic?`<div class="warn">⚠ Dada antiga o sense hora: pot no reflectir l'estat actual.</div>`:"")}
+$("q").oninput=async e=>{const r=await j("/api/clubs?q="+encodeURIComponent(e.target.value));
+  $("clubs").innerHTML=r.clubs.map(c=>`<button data-c="${esc(c)}">${esc(c)}</button>`).join("")};
+$("clubs").onclick=e=>{if(e.target.dataset.c){club=e.target.dataset.c;llista()}};
+async function llista(){
+  $("filtres").hidden=false;
+  $("filtres").innerHTML=[["pendents","Pendents"],["avui","Avui"],["tots","Tots"]].map(([k,t])=>`<button data-f="${k}" class="${k==filtre?"on":""}">${t}</button>`).join("");
+  const r=await j(`/api/partits?club=${encodeURIComponent(club)}&filtre=${filtre}`);
+  $("out").innerHTML=r.partits.map(m=>`<div class="card" data-id="${esc(m.id)}"><div class="meta">${esc(D(m.competicio))} · ${ESTAT[m.estat]} · ${hora(m.dataPartit)}</div>
+   <div>${esc(D(m.local))} <span class="sc">${D(m.puntsLocal)} - ${D(m.puntsVisitant)}</span> ${esc(D(m.visitant))}</div>${foot(m)}</div>`).join("")||"<p>Cap partit.</p>"}
+$("filtres").onclick=e=>{if(e.target.dataset.f){filtre=e.target.dataset.f;llista()}};
+function taula(js){return `<table><tr><th>#</th><th>Jugador</th><th>Min</th><th>Pts</th><th>T2</th><th>T3</th><th>TL</th><th>F</th></tr>`+
+  (js.length?js.map(p=>`<tr><td>${D(p.dorsal)}</td><td>${esc(D(p.nom))}</td><td>${D(p.min)}</td><td>${D(p.pts)}</td><td>${D(p.t2)}</td><td>${D(p.t3)}</td><td>${D(p.tl)}</td><td>${D(p.faltes)}</td></tr>`).join(""):`<tr><td colspan=8>—</td></tr>`)+`</table>`}
+$("out").onclick=async e=>{const c=e.target.closest(".card");if(!c)return;
+  const m=await j("/api/partit/"+encodeURIComponent(c.dataset.id));
+  const pt={periode:"per període",acumulat:"acumulats",desconegut:"tipus desconegut"}[m.parcialsTipus];
+  $("out").innerHTML=`<button id="bk">← Partits</button><div class="card"><div class="meta">${esc(D(m.competicio))} · ${ESTAT[m.estat]} · període ${D(m.periodeActual)} · rellotge ${D(m.rellotge)}</div>
+   <div>${esc(D(m.local))} <span class="sc">${D(m.puntsLocal)} - ${D(m.puntsVisitant)}</span> ${esc(D(m.visitant))}</div>
+   <h4>Parcials (${pt})</h4>`+(m.periodes.length?m.periodes.map(p=>`<div>P${D(p.periode)}: ${D(p.local)} - ${D(p.visitant)}</div>`).join(""):"—")+
+   `<h4>${esc(D(m.local))}</h4>${taula(m.jugadors.local)}<h4>${esc(D(m.visitant))}</h4>${taula(m.jugadors.visitant)}${foot(m)}</div>`;
+  $("bk").onclick=llista};
+</script></body></html>
