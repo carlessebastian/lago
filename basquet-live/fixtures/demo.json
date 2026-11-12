@@ -1,0 +1,21 @@
+{"_etiqueta": "DEMO: dades fictícies, no provenen de la FCBQ",
+ "partits": [
+  {"id": "demo-1", "competicio": "DEMO Infantil A", "local": "QBASKET SANT CUGAT", "visitant": "CB Exemple",
+   "diesDesDeAvui": 0, "hora": "00:01", "estat": "en_joc", "puntsLocal": 34, "puntsVisitant": 31,
+   "periodeActual": 3, "rellotge": "04:12", "parcialsTipus": "desconegut", "fa_segons": 20,
+   "periodes": [{"periode": 1, "local": 10, "visitant": 8}, {"periode": 2, "local": null, "visitant": null}],
+   "jugadors": {
+     "local": [{"dorsal": "4", "nom": "Jugador Demo A", "min": "12:30", "pts": 8, "t2": "3/5", "t3": "0/1", "tl": "2/2", "faltes": 1},
+               {"dorsal": "7", "nom": "Jugador Demo B", "pts": 5}],
+     "visitant": [{"dorsal": "9", "nom": "Jugador Demo C", "pts": 10, "t2": "5/9"}]}},
+  {"id": "demo-2", "competicio": "DEMO Cadet B", "local": "CB Prova", "visitant": "QBASKET SANT CUGAT 1",
+   "diesDesDeAvui": 0, "hora": "23:30", "estat": "programat", "parcialsTipus": "desconegut",
+   "fa_segons": 600},
+  {"id": "demo-3", "competicio": "DEMO Infantil A", "local": "QBASKET SANT CUGAT", "visitant": "CB Mostra",
+   "diesDesDeAvui": -7, "hora": "17:00", "estat": "finalitzat", "puntsLocal": 52, "puntsVisitant": 47,
+   "parcialsTipus": "acumulat", "fa_segons": 604800,
+   "periodes": [{"periode": 1, "local": 12, "visitant": 10}, {"periode": 2, "local": 25, "visitant": 22},
+                {"periode": 3, "local": 40, "visitant": 35}, {"periode": 4, "local": 52, "visitant": 47}]},
+  {"id": "demo-4", "competicio": "DEMO Júnior", "local": "CB Fictici", "visitant": "QBASKET SANT CUGAT",
+   "diesDesDeAvui": 5, "hora": "19:00", "estat": "ajornat", "fa_segons": 3600}
+ ]}
